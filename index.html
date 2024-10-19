@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List Application</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .list-group-item.completed {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Task List</h1>
+        <form id="task-form">
+            <div class="form-group">
+                <input type="text" id="task-title" class="form-control" placeholder="Task Title" required>
+            </div>
+            <div class="form-group">
+                <select id="task-priority" class="form-control" required>
+                    <option value="">Select Priority</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status:</label><br>
+                <input type="radio" name="task-status" value="pending" checked> Pending
+                <input type="radio" name="task-status" value="completed"> Completed
+            </div>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+        <ul id="task-list" class="list-group mt-4"></ul>
+    </div>
+    <script>
+        const tasks = [];
+
+        document.getElementById('task-form').onsubmit = function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            const title = document.getElementById('task-title').value;
+            const priority = document.getElementById('task-priority').value;
+            const status = document.querySelector('input[name="task-status"]:checked').value;
+
+            const task = { title, priority, status };
+            tasks.push(task);
+            
+            addTaskToDOM(task);
+            this.reset(); // Reset the form
+        };
+
+        function addTaskToDOM(task) {
+            const taskList = document.getElementById('task-list');
+            const taskItem = document.createElement('li');
+            
+            taskItem.className = 'list-group-item';
+            taskItem.innerHTML = `
+                <strong>${task.title}</strong> (Priority: ${task.priority}) - Status: ${task.status}
+                <button class="btn btn-success btn-sm ml-2" onclick="markAsComplete(this)">Mark as Complete</button>
+                <button class="btn btn-danger btn-sm ml-2" onclick="removeTask(this)">Remove</button>
+            `;
+            
+            taskList.appendChild(taskItem);
+        }
+
+        function markAsComplete(button) {
+            const taskItem = button.parentElement;
+            taskItem.classList.toggle('completed');
+            
+            const status = taskItem.innerText.includes('Completed') ? 'pending' : 'completed';
+            updateTaskStatus(taskItem, status);
+        }
+
+        function removeTask(button) {
+            const taskItem = button.parentElement;
+            const index = Array.from(taskItem.parentNode.children).indexOf(taskItem);
+            
+            tasks.splice(index, 1);
+            taskItem.remove();
+        }
+
+        function updateTaskStatus(taskItem, status) {
+            taskItem.childNodes[1].textContent = `Status: ${status}`;
+        }
+    </script>
+</body>
+</html>
 
